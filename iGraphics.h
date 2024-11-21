@@ -6,6 +6,8 @@
 //
 //  Version: 2.0.2012.2015
 //
+#ifndef I_GRAPHICS
+#define I_GRAPHICS
 
 # include <stdio.h>
 # include <stdlib.h>
@@ -21,6 +23,8 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #endif
+
+
 
 int iScreenHeight, iScreenWidth;
 int iMouseX, iMouseY;
@@ -547,3 +551,5 @@ void iInitialize(int width=500, int height=500, char *title="iGraphics")
 
     glutMainLoop();
 }
+
+#endif GRAPHICS

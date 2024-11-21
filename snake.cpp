@@ -1,8 +1,9 @@
-#include <Windows.h>
-#include <string.h>
-#include <stdbool.h>
 #include "iGraphics.h"
 #include"pages/home.cpp"
+#include"library/ui.cpp"
+#include <string.h>
+#include <stdbool.h>
+#include <Windows.h>
 
 // CONSTANTS
 #define WINDOW_HEIGHT 625
@@ -25,15 +26,6 @@ typedef struct
 	int y;
 } SnakeNode;
 
-/*
-page_state = 0 ->  home page
-page_state = 1 ->  single player page
-page_state = 2 ->  two player page
-page_state = 3 ->  vs computer page
-page_state = 4 ->  settings page
-page_state = 5 ->  help page
-*/
-int page_state = 0;
 
 /* 
 snake directions
@@ -54,8 +46,8 @@ int snake_len = 8;
 // FUNCTION PROTOTYPES
 
 // RENDERS HOMEPAGE
-void home_page();
-// RENDERS SINGLE PLAYER PAGE
+// void home_page();
+// // RENDERS SINGLE PLAYER PAGE
 void single_player();
 // PRINTS BUTTON ACCORDING TO COORDINATES
 void button_printer(Rect btn, char text[]);
@@ -128,31 +120,32 @@ void iMouse(int button, int state, int mx, int my)
 {
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
 	{
-		// if single player button is clicked
-		if (is_clicked(mx, my, (WINDOW_WIDTH / 2) - 150, 450, 300, 60))
-		{
-			page_state = 1;
-		}
-		// if two player button is clicked
-		else if (is_clicked(mx, my, (WINDOW_WIDTH / 2) - 150, 370, 300, 60))
-		{
-			page_state = 2;
-		}
-		// if vs computer button is clicked
-		else if (is_clicked(mx, my, (WINDOW_WIDTH / 2) - 150, 290, 300, 60))
-		{
-			page_state = 3;
-		}
-		// if settings button is clicked
-		else if (is_clicked(mx, my, (WINDOW_WIDTH / 2) - 150, 210, 300, 60))
-		{
-			page_state = 4;
-		}
-		// if help is clicked
-		else if (is_clicked(mx, my, (WINDOW_WIDTH / 2) - 150, 130, 300, 60))
-		{
-			page_state = 5;
-		}
+		switch (page_state)
+	{
+	case 0:
+		home_page_control(mx,my);
+		break;
+	case 1:
+		// single_player();
+		break;
+	case 2:
+		iText(50, 60, "THIS IS TWO PLAYER PAGE", GLUT_BITMAP_HELVETICA_18);
+		break;
+	case 3:
+		iText(50, 60, "THIS IS COMPUTER PAGE", GLUT_BITMAP_HELVETICA_18);
+		break;
+	case 4:
+		iText(50, 60, "THIS IS SETTINGS PAGE", GLUT_BITMAP_HELVETICA_18);
+		break;
+	case 5:
+		iText(50, 60, "THIS IS HELP PAGE", GLUT_BITMAP_HELVETICA_18);
+		break;
+
+	default:
+		break;
+	}
+
+		
 	}
 	if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN)
 	{
@@ -235,7 +228,7 @@ void iSpecialKeyboard(unsigned char key)
 int main()
 {
 	// place your own initialization codes here.
-	iSetTimer(100,snake_update);
+	// iSetTimer(100,snake_update);
 	printf("hi");
 
 	iInitialize(WINDOW_WIDTH, WINDOW_HEIGHT, "Snake_shhhhhh");

@@ -1,8 +1,24 @@
+#ifndef UI_LIBRARY
+#define UI_LIBRARY
+
 #include <string.h>
 #include <stdbool.h>
-// #include "iGraphics.h"
+#include "../iGraphics.h"
+
 #define WINDOW_HEIGHT 625
 #define WINDOW_WIDTH 1000
+
+
+/*
+page_state = 0 ->  home page
+page_state = 1 ->  single player page
+page_state = 2 ->  two player page
+page_state = 3 ->  vs computer page
+page_state = 4 ->  settings page
+page_state = 5 ->  help page
+*/
+int page_state = 0;
+// int *page_st
 
 typedef struct
 {
@@ -125,3 +141,6 @@ int click_or_hover(int mx, int my, Ui ui)
     else
         return 0;
 }
+
+
+#endif // UI_LIBRARY
