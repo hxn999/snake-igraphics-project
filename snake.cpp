@@ -1,7 +1,8 @@
-#include "iGraphics.h"
 #include <Windows.h>
 #include <string.h>
 #include <stdbool.h>
+#include "iGraphics.h"
+#include"pages/home.cpp"
 
 // CONSTANTS
 #define WINDOW_HEIGHT 625
@@ -245,24 +246,24 @@ int main()
 // PAGE FUNCTIONS
 
 // RENDERS HOMEPAGE
-void home_page()
-{
-	// SINGLE PLAYER
-	Rect single_page = {(WINDOW_WIDTH / 2) - 150, 450, 300, 60};
-	button_printer(single_page, "START SINGLE PLAYER");
-	// TWO PLAYER
-	Rect two_player_page = {(WINDOW_WIDTH / 2) - 150, 370, 300, 60};
-	button_printer(two_player_page, "START TWO PLAYER");
-	// VS COMPUTER
-	Rect computer = {(WINDOW_WIDTH / 2) - 150, 290, 300, 60};
-	button_printer(computer, "PLAY VS COMPUTER");
-	// SETTINGS
-	Rect settings = {(WINDOW_WIDTH / 2) - 150, 210, 300, 60};
-	button_printer(settings, "SETTINGS");
-	// HELP
-	Rect help = {(WINDOW_WIDTH / 2) - 150, 130, 300, 60};
-	button_printer(help, "HELP");
-}
+// void home_page()
+// {
+// 	// SINGLE PLAYER
+// 	Rect single_page = {(WINDOW_WIDTH / 2) - 150, 450, 300, 60};
+// 	button_printer(single_page, "START SINGLE PLAYER");
+// 	// TWO PLAYER
+// 	Rect two_player_page = {(WINDOW_WIDTH / 2) - 150, 370, 300, 60};
+// 	button_printer(two_player_page, "START TWO PLAYER");
+// 	// VS COMPUTER
+// 	Rect computer = {(WINDOW_WIDTH / 2) - 150, 290, 300, 60};
+// 	button_printer(computer, "PLAY VS COMPUTER");
+// 	// SETTINGS
+// 	Rect settings = {(WINDOW_WIDTH / 2) - 150, 210, 300, 60};
+// 	button_printer(settings, "SETTINGS");
+// 	// HELP
+// 	Rect help = {(WINDOW_WIDTH / 2) - 150, 130, 300, 60};
+// 	button_printer(help, "HELP");
+// }
 
 // RENDERS SINGLE PLAYER PAGE
 void single_player()

@@ -106,17 +106,13 @@ void render(Ui *ui)
 
     if (ui->font_size == 18)
     {
-        int font_x = x + (((ui->w) - strlen(ui->text) * 10) / 2);
-        if (ui->border_radius)
-            font_x = x + ((ui->h) / 3);
+        int font_x = x + (((ui->w)  - strlen(ui->text) * 11) / 2);
         int font_y = y + (((ui->h) - 14) / 2);
         iText(font_x, font_y, ui->text, GLUT_BITMAP_HELVETICA_18);
     }
     else
     {
-        int font_x = x + (((ui->w) - strlen(ui->text) * 6) / 2);
-        if (ui->border_radius)
-            font_x = x + ((ui->h) / 3);
+        int font_x = x + (((ui->w) - strlen(ui->text) * 7) / 2);
         int font_y = y + (((ui->h) - 10) / 2);
         iText(font_x, font_y, ui->text, GLUT_BITMAP_HELVETICA_12);
     }
