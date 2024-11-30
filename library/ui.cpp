@@ -18,7 +18,23 @@ page_state = 4 ->  settings page
 page_state = 5 ->  help page
 */
 int page_state = 0;
-// int *page_st
+
+
+// snake position
+typedef struct
+{
+	int x;
+	int y;
+} SnakeNode;
+
+typedef struct
+{
+	int x;
+	int y;
+} Tuple;
+
+
+
 
 typedef struct
 {
