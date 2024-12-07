@@ -2,7 +2,7 @@
 #define SINGLE_PLAYER
 
 #include <stdbool.h>
-
+#include <Windows.h>
 #include "../library/ui.cpp"
 #include "../iGraphics.h"
 
@@ -20,21 +20,35 @@ int direction_x = -1, direction_y = 0;
 int life = 3;
 // score increased by one after eating food
 int score = 0;
-char score_str[16] = "Score : 0";
-char life_str[15] = "Life : 3";
-int heart = 3;
-// sprintf(life_str,"Life : %c %c %c",heart,heart,heart);
+// score added with bonus points
+int pseudo_score = 0;
 
+char life_str[15] = "Life : 3";
+char score_str[40] = "Score :   0";
+int heart = 3;
+
+// verifies bonus food eaten of not
+bool bonus_eaten;
+
+// counts bonus time | total 3 seconds of time will be given
+int bonus_time = 5;
 
 // total 3 levels
 int level = 1;
 
-//counts status modal seconds
-int status_time=10;
-//shows in status modal
+// counts status modal seconds
+int status_time = 10;
+// shows in status modal
 char status_str[30] = "RESPAWNING IN FEW MOMENTS";
 
-int food_x=17, food_y=17;
+//highscore file
+
+
+int food_x = 17, food_y = 17;
+int bonus_food_x = 100, bonus_food_y = 100;
+
+// random bonus food coordinates
+Tuple bonus_coordinate[6] = {{1, 1}, {1, 16}, {29, 1}, {29, 16}, {15, 13}, {15, 3}};
 
 SnakeNode tail_node;
 
@@ -100,12 +114,15 @@ Ui score_ui = {
 	ypos(12, "top", &score_ui),
 	20,
 	120,
-	score_str,
-	{82, 3, 252},
-	18,
+	"Score :   0",
+	{255, 3, 252},
+	12,
 	"",
 	false,
 };
+
+
+
 Ui life_ui = {
 	xpos(20, "right", &life_ui),
 	ypos(12, "top", &life_ui),
@@ -119,42 +136,114 @@ Ui life_ui = {
 };
 
 Ui status_ui = {
-	xpos( 99," left",&status_ui),
-	ypos( 99," bot",&status_ui),
+	xpos(99, " left", &status_ui),
+	ypos(99, " bot", &status_ui),
 	200,
 	400,
 	status_str,
-	{ 82 ,  3,  252},
-	 18,
+	{82, 3, 252},
+	18,
 	"center",
-	 false,
+	false,
+};
+Ui bonus_progress_bar = {
+	xpos(210, "left", &bonus_progress_bar),
+	ypos(15, "top", &bonus_progress_bar),
+	15,
+	0,
+	"",
+	{255, 255, 255},
+	18,
+	"",
+	false,
+};
+Ui bonus_text = {
+	xpos(120, "left", &bonus_text),
+	ypos(12, "top", &bonus_text),
+	20,
+	80,
+	"",
+	{82, 3, 252},
+	18,
+	"",
+	false,
+};
+
+Ui exit_ui = {
+	xpos(20, "left", &exit_ui),
+	ypos(12, "top", &exit_ui),
+	20,
+	100,
+	"<-- EXIT",
+	{82, 3, 252},
+	18,
+	"",
+	false,
 };
 
 void status_modal()
 {
-	if(status_time<8)
+	if (status_time < 8)
 	{
-	status_time++;
+		status_time++;
 	}
-	else{
-		status_time=10;
+	else
+	{
+		status_time = 10;
 		iPauseTimer(2);
-		if(strcmp(status_str,"RESPAWNING IN FEW MOMENTS")!=0)
+		if (strcmp(status_str, "RESPAWNING IN FEW MOMENTS") != 0)
 		{
-			page_state=0;
-			score=0;
-			life=3;
-			level=1;
-			strcpy(status_str,"RESPAWNING IN FEW MOMENTS");
-			strcpy(life_str,"Life : 3");
-			strcpy(score_str,"Score : 0");
+			// resetting all game states and redirecting to homepage
+			page_state = 0;
+			score = 0;
+			life = 3;
+			level = 1;
+			strcpy(status_str, "RESPAWNING IN FEW MOMENTS");
+			strcpy(life_str, "Life : 3");
+			sprintf(score_str, "Score : %3d", 0);
+		score_ui.text=score_str;
 		}
-
 	}
-
-
 }
 
+// BONUS FOOD GENERATOR
+void bonus_food_spawn()
+{
+	int rand_coordinate = rand() % 6;
+
+	bonus_food_x = bonus_coordinate[rand_coordinate].x;
+	bonus_food_y = bonus_coordinate[rand_coordinate].y;
+}
+
+// BONUS FOOD GENERATOR
+void bonus_food_timer()
+{
+	if (bonus_time == 0)
+	{
+		bonus_food_x = 100;
+		bonus_time = 5;
+		bonus_food_y = 100;
+		bonus_progress_bar.w = 0;
+		sprintf(bonus_text.text,"");
+		iPauseTimer(3);
+	}
+	else
+	{
+		bonus_time--;
+	}
+}
+// BONUS FOOD PROGRESS BAR
+void bonus_progress_controller()
+{
+	if (bonus_time == 0)
+	{
+		iPauseTimer(4);
+	}
+	else
+	{
+		bonus_progress_bar.w -= 2;
+	}
+}
 
 // FOOD SPAWN GENERATOR
 void food_spawn()
@@ -289,46 +378,82 @@ void snake_update()
 	int head_x = snake[0].x + direction_x;
 	int head_y = snake[0].y + direction_y;
 
-	// if hits the border or itself then life decreases and respawns 
+	// if hits the border or itself then life decreases and respawns
 
-
-	if (collide(head_x, head_y) ||(head_x < 0 || head_x > 32) ||(head_y < 0 || head_y > 18) )
+	if (collide(head_x, head_y) || (head_x < 0 || head_x > 32) || (head_y < 0 || head_y > 18))
 	{
 		iPauseTimer(0);
 		iPauseTimer(1);
 		iResumeTimer(2);
-		status_time=0;
+		status_time = 0;
 		life--;
-		if(life==0)
+		printf("snake crashed !!\n");
+		if (life == 0)
 		{
-			sprintf(status_str,"GAME OVER ---- SCORE : %d",score);
+			sprintf(status_str, "GAME OVER ---- SCORE :    %3d", pseudo_score);
 		}
-		sprintf(life_str, "Life :  %d",life);
+		sprintf(life_str, "Life :  %d", life);
 		for (int i = 0; i < 8; i++)
 		{
-			snake[i] = {21,15-i};
+			snake[i] = {21, 15 - i};
 		}
-		
-		snake_len=8;
+
+		snake_len = 8;
 		return;
 	};
 	// checking if snake eats the food
 	if ((head_x == food_x) && (head_y == food_y))
 	{
-
+		printf("snake bites !\n");
+		// PlaySound("assets/bite.wav", NULL, SND_ASYNC);
 		score++;
+		pseudo_score++;
+		printf("score %3d\n",pseudo_score);
 		tail_node = snake[snake_len - 1];
-		sprintf(score_str, "Score :  %d",score);
+		sprintf(score_str, "Score : %3d", pseudo_score);
+		score_ui.text=score_str;
 		if (score > 5)
 			level = 2;
 		if (score > 10)
 			level = 3;
-		iResumeTimer(1);
+		if ((score % 4) == 0 && score != 0)
+		{
+			bonus_food_spawn();
+			iResumeTimer(3);
+			bonus_progress_bar.w = 300;
+			iResumeTimer(4);
+			bonus_time=5;
+			sprintf(bonus_text.text,"BONUS!");
+		}
+		
+
+			iResumeTimer(1);
+		
 	}
 	else
 	{
 		iPauseTimer(1);
 	}
+
+	// checking if bonus food is eaten
+	if (bonus_food_x != 100)
+	{
+		bonus_eaten = ((head_x == bonus_food_x) && (head_y == bonus_food_y)) || ((head_x == (bonus_food_x + 1)) && (head_y == bonus_food_y)) || ((head_x == bonus_food_x) && (head_y == (bonus_food_y + 1))) || ((head_x == (bonus_food_x + 1)) && (head_y == (bonus_food_y + 1)));
+		if (bonus_eaten)
+		{
+			pseudo_score = pseudo_score + 3 * bonus_time;
+			bonus_food_x = 100;
+			bonus_food_y = 100;
+			bonus_progress_bar.w = 0;
+			iPauseTimer(3);
+			iPauseTimer(4);
+			sprintf(score_str, "Score : %3d", pseudo_score);
+			score_ui.text=score_str;
+			sprintf(bonus_text.text,"");
+			bonus_time=5;
+		}
+	}
+
 	// rest of body will follow previous node
 	for (int i = (snake_len - 1); i > 0; i--)
 	{
@@ -341,7 +466,7 @@ void snake_update()
 	if ((head_x == food_x) && (head_y == food_y))
 	{
 		snake[snake_len] = tail_node;
-		
+
 		snake_len++;
 	}
 
@@ -353,23 +478,47 @@ void snake_update()
 void single_player()
 {
 	render(&life_ui);
+	render(&exit_ui);
 	render(&score_ui);
+	render(&bonus_text);
+	render(&bonus_progress_bar);
 	iShowBMP(food_x * 30, food_y * 30, "C:\\Users\\user\\Desktop\\BUET\\L-1 T-1\\CSE 102\\snake-igraphics-project\\assets\\food.bmp");
+	iShowBMP(bonus_food_x * 30, bonus_food_y * 30, "C:\\Users\\user\\Desktop\\BUET\\L-1 T-1\\CSE 102\\snake-igraphics-project\\assets\\bonus-food.bmp");
 	snake_printer();
 	obstacle_printer();
-	if(status_time<8)
-	render(&status_ui);
+	if (status_time < 8)
+		render(&status_ui);
 }
 
 void single_player_control(int mx, int my)
 {
+	if (click_or_hover(mx, my, exit_ui))
+	{
+
+		page_state = 0;
+		score = 0;
+		life = 3;
+		level = 1;
+		strcpy(status_str, "RESPAWNING IN FEW MOMENTS");
+		strcpy(life_str, "Life : 3");
+		sprintf(score_str, "Score : %3d", 0);
+		score_ui.text=score_str;
+		for (int i = 0; i < 8; i++)
+		{
+			snake[i] = {21, 15 - i};
+		}
+
+		snake_len = 8;
+	}
 }
 
 void single_player_special_control(unsigned char key)
 {
-	if(status_time<8) return;
-	if(iAnimPause[0]==1) iResumeTimer(0);
-	// if(iAnimPause[1]==1) iResumeTimer(1);
+	if (status_time < 8)
+		return;
+	if (iAnimPause[0] == 1)
+		iResumeTimer(0);
+
 	if (key == GLUT_KEY_END)
 	{
 		exit(0);
@@ -378,6 +527,7 @@ void single_player_special_control(unsigned char key)
 	{
 		if (direction_x != 0)
 		{
+			printf("snake goes up\n");
 			direction_y = 1;
 			direction_x = 0;
 		}
@@ -386,6 +536,7 @@ void single_player_special_control(unsigned char key)
 	{
 		if (direction_x != 0)
 		{
+			printf("snake goes down\n");
 			direction_y = -1;
 			direction_x = 0;
 		}
@@ -394,6 +545,7 @@ void single_player_special_control(unsigned char key)
 	{
 		if (direction_y != 0)
 		{
+			printf("snake turns right\n");
 			direction_y = 0;
 			direction_x = 1;
 		}
@@ -402,6 +554,7 @@ void single_player_special_control(unsigned char key)
 	{
 		if (direction_y != 0)
 		{
+			printf("snake turns left\n");
 			direction_y = 0;
 			direction_x = -1;
 		}

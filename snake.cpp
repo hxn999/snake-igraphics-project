@@ -2,6 +2,7 @@
 #include "pages/home.cpp"
 #include "library/ui.cpp"
 #include "pages/single_player.cpp"
+#include "pages/settings.cpp"
 #include <string.h>
 #include<time.h>
 #include <stdbool.h>
@@ -11,49 +12,6 @@
 #define WINDOW_HEIGHT 625
 #define WINDOW_WIDTH 1000
 
-// data structures
-
-// typedef struct
-// {
-// 	int x;
-// 	int y;
-// 	int len
-// 	;
-// 	int h;
-// } Rect;
-
-// /*
-// snake directions
-// x,y=0 means static snake
-// y = 1 -> up
-// y = -1 -> down
-// x = 1 -> right
-// x = -1 -> left
-// */
-// int direction_x=1;
-// int direction_y=0;
-
-// // snake array
-// SnakeNode snake[150] = {{20, 15}, {20, 14}, {20, 13}, {20, 12}, {20, 11}, {20, 10},{20, 9},{20, 8},};
-// // snake length ( initial length 6)
-// int snake_len = 8;
-
-// FUNCTION PROTOTYPES
-
-// RENDERS HOMEPAGE
-// void home_page();
-// // RENDERS SINGLE PLAYER PAGE
-// void single_player();
-// // PRINTS BUTTON ACCORDING TO COORDINATES
-// void button_printer(Rect btn, char text[]);
-// // CHECKS MOUSE COORDINATE IS IN BOUND
-// int is_clicked(int mx, int my, int x, int y, int l, int h);
-// // PRINTS SNAKE
-// void snake_printer();
-// // UPDATES SNAKE
-// void snake_update();
-// // FOOD SPAWN GENERATOR
-// void food_spawn();
 
 /*
 	function iDraw() is called again and again by the system.
@@ -87,7 +45,7 @@ void iDraw()
 		iText(50, 60, "THIS IS COMPUTER PAGE", GLUT_BITMAP_HELVETICA_18);
 		break;
 	case 4:
-		iText(50, 60, "THIS IS SETTINGS PAGE", GLUT_BITMAP_HELVETICA_18);
+		settings_page();
 		break;
 	case 5:
 		iText(50, 60, "THIS IS HELP PAGE", GLUT_BITMAP_HELVETICA_18);
@@ -131,7 +89,7 @@ void iMouse(int button, int state, int mx, int my)
 			iText(50, 60, "THIS IS COMPUTER PAGE", GLUT_BITMAP_HELVETICA_18);
 			break;
 		case 4:
-			iText(50, 60, "THIS IS SETTINGS PAGE", GLUT_BITMAP_HELVETICA_18);
+			settings_control(mx,my);
 			break;
 		case 5:
 			iText(50, 60, "THIS IS HELP PAGE", GLUT_BITMAP_HELVETICA_18);
@@ -157,7 +115,7 @@ void iKeyboard(unsigned char key)
 	{
 		// do something with 'q'
 		iPauseTimer(0);
-		PlaySound("C:\\Users\\user\\Downloads\\bite.wav", NULL, SND_ASYNC);
+		PlaySound("assets/bite.wav", NULL, SND_ASYNC);
 	}
 	if (key == 'r')
 	{
@@ -179,7 +137,7 @@ void iKeyboard(unsigned char key)
 */
 void iSpecialKeyboard(unsigned char key)
 {
-	printf("%c",key);
+
 	switch (page_state)
 		{
 		case 0:
@@ -219,120 +177,11 @@ int main()
 	iPauseTimer(1);
 	iSetTimer(500,status_modal);
 	iPauseTimer(2);
-	printf("hi");
+	iSetTimer(1000,bonus_food_timer);
+	iPauseTimer(3);
+	iSetTimer(17,bonus_progress_controller);
+	iPauseTimer(4);
 
 	iInitialize(WINDOW_WIDTH, WINDOW_HEIGHT, "Snake_shhhhhh");
 	return 0;
 }
-
-// USER DEFINED FUNCTIONS
-// PAGE FUNCTIONS
-
-// RENDERS HOMEPAGE
-// void home_page()
-// {
-// 	// SINGLE PLAYER
-// 	Rect single_page = {(WINDOW_WIDTH / 2) - 150, 450, 300, 60};
-// 	button_printer(single_page, "START SINGLE PLAYER");
-// 	// TWO PLAYER
-// 	Rect two_player_page = {(WINDOW_WIDTH / 2) - 150, 370, 300, 60};
-// 	button_printer(two_player_page, "START TWO PLAYER");
-// 	// VS COMPUTER
-// 	Rect computer = {(WINDOW_WIDTH / 2) - 150, 290, 300, 60};
-// 	button_printer(computer, "PLAY VS COMPUTER");
-// 	// SETTINGS
-// 	Rect settings = {(WINDOW_WIDTH / 2) - 150, 210, 300, 60};
-// 	button_printer(settings, "SETTINGS");
-// 	// HELP
-// 	Rect help = {(WINDOW_WIDTH / 2) - 150, 130, 300, 60};
-// 	button_printer(help, "HELP");
-// }
-
-// RENDERS SINGLE PLAYER PAGE
-// void single_player()
-// {
-// 	snake_printer();
-
-// }
-
-// // UTILITIES
-
-// // PRINTS BUTTON ACCORDING TO COORDINATES
-// void button_printer(Rect btn, char text[])
-// {
-// 	iSetColor(82, 3, 252);
-// 	iFilledRectangle(btn.x, btn.y, btn.len, btn.h);
-// 	iSetColor(82, 3, 252);
-// 	iFilledCircle(btn.x, btn.y + (btn.h / 2), btn.h / 2);
-// 	iFilledCircle(btn.x + btn.len, btn.y + (btn.h / 2), btn.h / 2);
-// 	iSetColor(255, 255, 255);
-// 	iText((WINDOW_WIDTH / 2) - (btn.len / 2) - 30 + (((btn.len + 60) - strlen(text) * 11) / 2), btn.y + 25, text, GLUT_BITMAP_HELVETICA_18);
-// }
-
-// // CHECKS MOUSE COORDINATE IS IN BOUND
-// int is_clicked(int mx, int my, int x, int y, int l, int h)
-// {
-// 	if ((x < mx && mx < (x + l)) && (y < my && (my < (y + h))))
-// 		return 1;
-// 	else
-// 		return 0;
-// }
-
-// // PRINTS SNAKE
-// void snake_printer()
-// {
-// 	// printing head first
-// 	iSetColor(255, 3, 252);
-// 	iFilledRectangle(snake[0].x * 30, snake[0].y * 30, 30, 30);
-// 	iSetColor(82, 3, 0);
-// 	iRectangle(snake[0].x * 30, snake[0].y * 30, 30, 30);
-
-// 	for (int i = 1; i < snake_len; i++)
-// 		{
-// 			iSetColor(82, 3, 252);
-// 			iFilledRectangle(snake[i].x * 30, snake[i].y * 30, 30, 30);
-// 			iSetColor(82, 3, 0);
-// 			iRectangle(snake[i].x * 30, snake[i].y * 30, 30, 30);
-// 		}
-// }
-
-// // UPDATES SNAKE POSITION
-// void snake_update()
-// {
-// 	// checking if the snake hits the border
-// 	int head_x = snake[0].x + direction_x;
-// 	int head_y = snake[0].y + direction_y;
-
-// 	// if hits the border then snake doesnt move
-// 	if(head_x<0||head_x>32) return;
-// 	if(head_y<0||head_y>18) return;
-
-// 	// rest of body will follow previous node
-// 	for (int i = (snake_len-1); i > 0; i--)
-// 	{
-// 		if(direction_x!=0 || direction_y!=0)
-// 		{
-// 			snake[i].x = snake[i-1].x ;
-// 			snake[i].y = snake[i-1].y;
-// 		}
-// 	}
-
-// 	// modifying head position
-// 	snake[0].x = snake[0].x + direction_x;
-// 	snake[0].y = snake[0].y + direction_y;
-
-// }
-
-// // FOOD SPAWN GENERATOR
-// void food_spawn(){
-// 	// generating random x coordinate
-// 	int rand_x = rand()%33;
-// 	int rand_y = rand()%19;
-// 	int count;
-// 	do
-// 	{
-// 		count=0;
-// 		/* code */
-// 	} while (count!=0);
-
-// }
