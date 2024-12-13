@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include <Windows.h>
+#include<stdio.h>
 #include "../library/ui.cpp"
 #include "../iGraphics.h"
 
@@ -23,6 +24,9 @@ int score = 0;
 // score added with bonus points
 int pseudo_score = 0;
 
+//checks direction qued or not
+bool queue=false;
+
 char life_str[15] = "Life : 3";
 char score_str[40] = "Score :   0";
 int heart = 3;
@@ -42,7 +46,7 @@ int status_time = 10;
 char status_str[30] = "RESPAWNING IN FEW MOMENTS";
 
 //highscore file
-
+FILE* highscore;
 
 int food_x = 17, food_y = 17;
 int bonus_food_x = 100, bonus_food_y = 100;
@@ -113,10 +117,10 @@ Ui score_ui = {
 	xpos(200, "right", &score_ui),
 	ypos(12, "top", &score_ui),
 	20,
-	120,
+	160,
 	"Score :   0",
-	{255, 3, 252},
-	12,
+	{82, 3, 252},
+	18,
 	"",
 	false,
 };
@@ -224,7 +228,7 @@ void bonus_food_timer()
 		bonus_time = 5;
 		bonus_food_y = 100;
 		bonus_progress_bar.w = 0;
-		sprintf(bonus_text.text,"");
+		bonus_text.text="";
 		iPauseTimer(3);
 	}
 	else
@@ -373,6 +377,7 @@ void snake_printer()
 // UPDATES SNAKE POSITION
 void snake_update()
 {
+	queue=false;
 
 	// checking if the snake hits the border
 	int head_x = snake[0].x + direction_x;
@@ -392,6 +397,8 @@ void snake_update()
 		{
 			sprintf(status_str, "GAME OVER ---- SCORE :    %3d", pseudo_score);
 		}
+		sprintf(score_str, "Score : %3d", 0);
+		score_ui.text=score_str;
 		sprintf(life_str, "Life :  %d", life);
 		for (int i = 0; i < 8; i++)
 		{
@@ -399,7 +406,9 @@ void snake_update()
 		}
 
 		snake_len = 8;
+		
 		return;
+
 	};
 	// checking if snake eats the food
 	if ((head_x == food_x) && (head_y == food_y))
@@ -423,7 +432,7 @@ void snake_update()
 			bonus_progress_bar.w = 300;
 			iResumeTimer(4);
 			bonus_time=5;
-			sprintf(bonus_text.text,"BONUS!");
+			bonus_text.text="BONUS!";
 		}
 		
 
@@ -449,7 +458,7 @@ void snake_update()
 			iPauseTimer(4);
 			sprintf(score_str, "Score : %3d", pseudo_score);
 			score_ui.text=score_str;
-			sprintf(bonus_text.text,"");
+			bonus_text.text="";
 			bonus_time=5;
 		}
 	}
@@ -477,6 +486,7 @@ void snake_update()
 
 void single_player()
 {
+	 iText(20,30,"hi",GLUT_BITMAP_HELVETICA_18);
 	render(&life_ui);
 	render(&exit_ui);
 	render(&score_ui);
@@ -512,6 +522,9 @@ void single_player_control(int mx, int my)
 	}
 }
 
+void single_player_key_control(unsigned char key)
+{}
+
 void single_player_special_control(unsigned char key)
 {
 	if (status_time < 8)
@@ -523,6 +536,12 @@ void single_player_special_control(unsigned char key)
 	{
 		exit(0);
 	}
+
+	if(!queue)
+	{
+
+	queue=true;
+	
 	if (key == GLUT_KEY_UP)
 	{
 		if (direction_x != 0)
@@ -558,6 +577,7 @@ void single_player_special_control(unsigned char key)
 			direction_y = 0;
 			direction_x = -1;
 		}
+	}
 	}
 }
 
