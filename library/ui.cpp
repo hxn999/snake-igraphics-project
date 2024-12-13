@@ -20,6 +20,9 @@ page_state = 5 ->  help page
 int page_state = 0;
 
 
+// controlls snake speed difficulty=1 is the highest 2, is medium and 3 is low
+int difficulty=3;
+
 // snake position
 typedef struct
 {
