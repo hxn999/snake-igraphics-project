@@ -3,9 +3,18 @@
 
 #include <stdbool.h>
 #include <Windows.h>
-#include<stdio.h>
+#include <stdio.h>
 #include "../library/ui.cpp"
 #include "../iGraphics.h"
+
+// for storing highscore
+FILE *file;
+char filename[] = "highestScore.txt";
+char *content;
+long fileSize;
+char *endptr;
+long highest_score;
+char new_highest_score[5];
 
 /*
 snake directions
@@ -24,8 +33,8 @@ int score = 0;
 // score added with bonus points
 int pseudo_score = 0;
 
-//checks direction qued or not
-bool queue=false;
+// checks direction qued or not
+bool queue = false;
 
 char life_str[15] = "Life : 3";
 char score_str[40] = "Score :   0";
@@ -45,8 +54,8 @@ int status_time = 10;
 // shows in status modal
 char status_str[30] = "RESPAWNING IN FEW MOMENTS";
 
-//highscore file
-FILE* highscore;
+// highscore file
+FILE *highscore;
 
 int food_x = 17, food_y = 17;
 int bonus_food_x = 100, bonus_food_y = 100;
@@ -124,8 +133,6 @@ Ui score_ui = {
 	"",
 	false,
 };
-
-
 
 Ui life_ui = {
 	xpos(20, "right", &life_ui),
@@ -205,7 +212,7 @@ void status_modal()
 			strcpy(status_str, "RESPAWNING IN FEW MOMENTS");
 			strcpy(life_str, "Life : 3");
 			sprintf(score_str, "Score : %3d", 0);
-		score_ui.text=score_str;
+			score_ui.text = score_str;
 		}
 	}
 }
@@ -228,7 +235,7 @@ void bonus_food_timer()
 		bonus_time = 5;
 		bonus_food_y = 100;
 		bonus_progress_bar.w = 0;
-		bonus_text.text="";
+		bonus_text.text = "";
 		iPauseTimer(3);
 	}
 	else
@@ -377,7 +384,7 @@ void snake_printer()
 // UPDATES SNAKE POSITION
 void snake_update()
 {
-	queue=false;
+	queue = false;
 
 	// checking if the snake hits the border
 	int head_x = snake[0].x + direction_x;
@@ -393,12 +400,55 @@ void snake_update()
 		status_time = 0;
 		life--;
 		printf("snake crashed !!\n");
+
+		// game ends here
 		if (life == 0)
 		{
-			sprintf(status_str, "GAME OVER ---- SCORE :    %3d", pseudo_score);
+			// Open the file in read mode
+			file = fopen(filename, "r");
+		
+
+			// Find the file size
+			fseek(file, 0, SEEK_END);
+			fileSize = ftell(file);
+			rewind(file);
+
+			// Allocate memory for the file content
+			content = (char *)malloc(fileSize + 1);
+			
+
+			// Read the file into the buffer
+			fread(content, 1, fileSize, file);
+			content[fileSize] = '\0'; // Null-terminate the string
+
+			highest_score = strtol(content, &endptr, 10);
+
+			if (pseudo_score >= highest_score)
+			{
+				sprintf(status_str, "HIGHEST SCORE :  %3d !!", pseudo_score);
+				free(content);
+				fclose(file);
+
+				file = fopen(filename, "w");
+				
+
+				sprintf(new_highest_score,"%d",pseudo_score);
+				// Write the new content to the file
+				fprintf(file, "%s", new_highest_score);
+
+				// Close the file
+				fclose(file);
+			}
+			else{
+				sprintf(status_str, "SCORE :  %3d | HIGHEST SCORE :  %3ld", pseudo_score, highest_score);
+				free(content);
+				fclose(file);
+			}
+
+			// Free allocated memory and close the file
 		}
-		sprintf(score_str, "Score : %3d", 0);
-		score_ui.text=score_str;
+		// sprintf(score_str, "Score : %3d", 0);
+		// score_ui.text = score_str;
 		sprintf(life_str, "Life :  %d", life);
 		for (int i = 0; i < 8; i++)
 		{
@@ -406,9 +456,8 @@ void snake_update()
 		}
 
 		snake_len = 8;
-		
-		return;
 
+		return;
 	};
 	// checking if snake eats the food
 	if ((head_x == food_x) && (head_y == food_y))
@@ -417,10 +466,10 @@ void snake_update()
 		// PlaySound("assets/bite.wav", NULL, SND_ASYNC);
 		score++;
 		pseudo_score++;
-		printf("score %3d\n",pseudo_score);
+		printf("score %3d\n", pseudo_score);
 		tail_node = snake[snake_len - 1];
 		sprintf(score_str, "Score : %3d", pseudo_score);
-		score_ui.text=score_str;
+		score_ui.text = score_str;
 		if (score > 5)
 			level = 2;
 		if (score > 10)
@@ -431,13 +480,11 @@ void snake_update()
 			iResumeTimer(3);
 			bonus_progress_bar.w = 300;
 			iResumeTimer(4);
-			bonus_time=5;
-			bonus_text.text="BONUS!";
+			bonus_time = 5;
+			bonus_text.text = "BONUS!";
 		}
-		
 
-			iResumeTimer(1);
-		
+		iResumeTimer(1);
 	}
 	else
 	{
@@ -457,9 +504,9 @@ void snake_update()
 			iPauseTimer(3);
 			iPauseTimer(4);
 			sprintf(score_str, "Score : %3d", pseudo_score);
-			score_ui.text=score_str;
-			bonus_text.text="";
-			bonus_time=5;
+			score_ui.text = score_str;
+			bonus_text.text = "";
+			bonus_time = 5;
 		}
 	}
 
@@ -486,7 +533,7 @@ void snake_update()
 
 void single_player()
 {
-	 iText(20,30,"hi",GLUT_BITMAP_HELVETICA_18);
+	iText(20, 30, "hi", GLUT_BITMAP_HELVETICA_18);
 	render(&life_ui);
 	render(&exit_ui);
 	render(&score_ui);
@@ -512,7 +559,7 @@ void single_player_control(int mx, int my)
 		strcpy(status_str, "RESPAWNING IN FEW MOMENTS");
 		strcpy(life_str, "Life : 3");
 		sprintf(score_str, "Score : %3d", 0);
-		score_ui.text=score_str;
+		score_ui.text = score_str;
 		for (int i = 0; i < 8; i++)
 		{
 			snake[i] = {21, 15 - i};
@@ -523,7 +570,8 @@ void single_player_control(int mx, int my)
 }
 
 void single_player_key_control(unsigned char key)
-{}
+{
+}
 
 void single_player_special_control(unsigned char key)
 {
@@ -537,47 +585,47 @@ void single_player_special_control(unsigned char key)
 		exit(0);
 	}
 
-	if(!queue)
+	if (!queue)
 	{
 
-	queue=true;
-	
-	if (key == GLUT_KEY_UP)
-	{
-		if (direction_x != 0)
+		queue = true;
+
+		if (key == GLUT_KEY_UP)
 		{
-			printf("snake goes up\n");
-			direction_y = 1;
-			direction_x = 0;
+			if (direction_x != 0)
+			{
+				printf("snake goes up\n");
+				direction_y = 1;
+				direction_x = 0;
+			}
 		}
-	}
-	if (key == GLUT_KEY_DOWN)
-	{
-		if (direction_x != 0)
+		if (key == GLUT_KEY_DOWN)
 		{
-			printf("snake goes down\n");
-			direction_y = -1;
-			direction_x = 0;
+			if (direction_x != 0)
+			{
+				printf("snake goes down\n");
+				direction_y = -1;
+				direction_x = 0;
+			}
 		}
-	}
-	if (key == GLUT_KEY_RIGHT)
-	{
-		if (direction_y != 0)
+		if (key == GLUT_KEY_RIGHT)
 		{
-			printf("snake turns right\n");
-			direction_y = 0;
-			direction_x = 1;
+			if (direction_y != 0)
+			{
+				printf("snake turns right\n");
+				direction_y = 0;
+				direction_x = 1;
+			}
 		}
-	}
-	if (key == GLUT_KEY_LEFT)
-	{
-		if (direction_y != 0)
+		if (key == GLUT_KEY_LEFT)
 		{
-			printf("snake turns left\n");
-			direction_y = 0;
-			direction_x = -1;
+			if (direction_y != 0)
+			{
+				printf("snake turns left\n");
+				direction_y = 0;
+				direction_x = -1;
+			}
 		}
-	}
 	}
 }
 

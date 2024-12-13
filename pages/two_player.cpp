@@ -20,7 +20,7 @@ x = -1 -> left
 */
 char test[10] = "hi";
 
-int direction_x1 = -1, direction_y1 = 0;
+int direction_x1 = 0, direction_y1 = 0;
 
 // snake1 will have total 3 life1
 int life1 = 3;
@@ -52,7 +52,7 @@ bool queue1 = false, queue2 = false;
 // highscore file
 //  FILE* highscore;
 
-int food_x1 = 10, food_y1 = 10;
+int food_x1 = 16, food_y1 = 10;
 // int bonus_food_x = 100, bonus_food_y = 100;
 
 // random bonus food coordinates
@@ -62,14 +62,14 @@ SnakeNode tail_node1;
 
 // snake1 array
 SnakeNode snake1[150] = {
-	{20, 15},
-	{20, 14},
-	{20, 13},
-	{20, 12},
-	{20, 11},
-	{20, 10},
-	{20, 9},
-	{20, 8},
+	{28, 15},
+	{28, 14},
+	{28, 13},
+	{28, 12},
+	{28, 11},
+	{28, 10},
+	{28, 9},
+	{28, 8},
 };
 
 // obstacles
@@ -118,7 +118,7 @@ int snake_len1 = 8;
 int snake_len2 = 8;
 
 // for second snake
-int direction_x2 = -1, direction_y2 = 0;
+int direction_x2 = 0, direction_y2 = 0;
 // snake2 will have total 3 life2
 int life2 = 3;
 // score2 increased by one after eating food
@@ -203,7 +203,7 @@ Ui status_ui1 = {
 	false,
 };
 Ui bonus_progress_bar1 = {
-	xpos(210, "left", &bonus_progress_bar1),
+	xpos(310, "left", &bonus_progress_bar1),
 	ypos(15, "top", &bonus_progress_bar1),
 	15,
 	0,
@@ -241,25 +241,46 @@ void status_modal1()
 {
 	if (status_time < 8)
 	{
+		printf("hiiiiiiii\n");
 		status_time++;
 	}
 	else
 	{
+		printf("hiiiiiiii-------\n");
 		status_time = 10;
-		iPauseTimer(2);
-		if (strcmp(status_str, "RESPAWNING IN FEW MOMENTS") != 0)
+		iPauseTimer(10);
+
+		// resetting all game states and redirecting to homepage
+		page_state = 0;
+		score1 = 0;
+		life1 = 3;
+		level = 1;
+		sprintf(life_str1, "Life : 3");
+		life_ui1.text = life_str1;
+		sprintf(score_str1, "score1 : %3d", 0);
+		score_ui1.text = score_str1;
+
+		score2 = 0;
+		life2 = 3;
+		// level = 1;
+		sprintf(life_str2, "Life : 3");
+		life_ui2.text = life_str2;
+		sprintf(score_str2, "score2 : %3d", 0);
+		score_ui2.text = score_str2;
+
+		for (int i = 0; i < 8; i++)
 		{
-			// resetting all game states and redirecting to homepage
-			page_state = 0;
-			score1 = 0;
-			life1 = 3;
-			level = 1;
-			strcpy(status_str, "RESPAWNING IN FEW MOMENTS");
-			sprintf(life_str1, "Life : 3");
-			life_ui1.text = life_str1;
-			sprintf(score_str1, "score1 : %3d", 0);
-			score_ui1.text = score_str1;
+			snake2[i] = {5, 15 - i};
 		}
+
+		snake_len2 = 8;
+		for (int i = 0; i < 8; i++)
+		{
+			snake1[i] = {28, 15 - i};
+		}
+
+		snake_len1 = 8;
+		// strcpy(status_str, "RESPAWNING IN FEW MOMENTS");
 	}
 }
 
@@ -282,7 +303,7 @@ void bonus_food_timer1()
 		bonus_food_y = 100;
 		bonus_progress_bar1.w = 0;
 		bonus_text1.text = "";
-		iPauseTimer(3);
+		iPauseTimer(8);
 	}
 	else
 	{
@@ -294,7 +315,7 @@ void bonus_progress_controller1()
 {
 	if (bonus_time == 0)
 	{
-		iPauseTimer(4);
+		iPauseTimer(9);
 	}
 	else
 	{
@@ -449,14 +470,14 @@ void snake_two_printer()
 		iRectangle(snake1[i].x * 30, snake1[i].y * 30, 30, 30);
 	}
 	// second snake
-	iSetColor(255, 3, 252);
+	iSetColor(110, 20, 109);
 	iFilledRectangle(snake2[0].x * 30, snake2[0].y * 30, 30, 30);
 	iSetColor(82, 3, 0);
 	iRectangle(snake2[0].x * 30, snake2[0].y * 30, 30, 30);
 
 	for (int i = 1; i < snake_len2; i++)
 	{
-		iSetColor(82, 3, 252);
+		iSetColor(161, 117, 255);
 		iFilledRectangle(snake2[i].x * 30, snake2[i].y * 30, 30, 30);
 		iSetColor(82, 3, 0);
 		iRectangle(snake2[i].x * 30, snake2[i].y * 30, 30, 30);
@@ -466,7 +487,14 @@ void snake_two_printer()
 // UPDATES snake1 POSITION
 void snake_two_update1()
 {
-	queue1=false;
+	if (pseudo_score1 >= 30)
+	{
+		iPauseTimer(5);
+		sprintf(status_str, "Plyer 2 Wins !!!");
+		status_time = 0;
+		iResumeTimer(10);
+	}
+	queue1 = false;
 	// checking if the snake1 hits the border
 	int head_x1 = snake1[0].x + direction_x1;
 	int head_y1 = snake1[0].y + direction_y1;
@@ -476,17 +504,18 @@ void snake_two_update1()
 	if (collide1(head_x1, head_y1) || (head_x1 < 0 || head_x1 > 32) || (head_y1 < 0 || head_y1 > 18))
 	{
 		iPauseTimer(5);
-		iPauseTimer(7);
-		iResumeTimer(2);
-		status_time = 0;
+		direction_x1 = 0;
+		direction_y1 = 0;
 		life1--;
 		printf("snake1 crashed !!\n");
 		if (life1 == 0)
 		{
-			sprintf(status_str, "GAME OVER ---- score1 :    %3d", pseudo_score1);
+			sprintf(status_str, "Plyer 2 Wins !!!");
+			status_time = 0;
+			iResumeTimer(10);
 		}
-		sprintf(score_str1, "score1 : %3d", 0);
-		score_ui1.text = score_str1;
+		// sprintf(score_str1, "score1 : %3d", 0);
+		// score_ui1.text = score_str1;
 		sprintf(life_str1, "Life :  %d", life1);
 		life_ui1.text = life_str1;
 		for (int i = 0; i < 8; i++)
@@ -516,9 +545,9 @@ void snake_two_update1()
 		if ((score1 % 4) == 0 && score1 != 0)
 		{
 			bonus_food_spawn1();
-			iResumeTimer(3);
+			iResumeTimer(8);
 			bonus_progress_bar1.w = 300;
-			iResumeTimer(4);
+			iResumeTimer(9);
 			bonus_time = 5;
 			bonus_text1.text = "BONUS!";
 		}
@@ -540,8 +569,8 @@ void snake_two_update1()
 			bonus_food_x = 100;
 			bonus_food_y = 100;
 			bonus_progress_bar1.w = 0;
-			iPauseTimer(3);
-			iPauseTimer(4);
+			iPauseTimer(8);
+			iPauseTimer(9);
 			sprintf(score_str1, "score1 : %3d", pseudo_score1);
 			score_ui1.text = score_str1;
 			bonus_text1.text = "";
@@ -572,8 +601,15 @@ void snake_two_update1()
 
 void snake_two_update2()
 {
+	if (pseudo_score2 >= 30)
+	{
+		iPauseTimer(6);
+		sprintf(status_str, "Plyer 1 Wins !!!");
+		status_time = 0;
+		iResumeTimer(10);
+	}
 
-	queue2=false;
+	queue2 = false;
 	// checking if the snake2 hits the border
 	int head_x2 = snake2[0].x + direction_x2;
 	int head_y2 = snake2[0].y + direction_y2;
@@ -583,17 +619,19 @@ void snake_two_update2()
 	if (collide2(head_x2, head_y2) || (head_x2 < 0 || head_x2 > 32) || (head_y2 < 0 || head_y2 > 18))
 	{
 		iPauseTimer(6);
-		iPauseTimer(7);
-		iResumeTimer(2);
-		status_time = 0;
+		direction_x2 = 0;
+		direction_y2 = 0;
+		// status_time = 0;
 		life2--;
 		printf("snake2 crashed !!\n");
 		if (life2 == 0)
 		{
-			sprintf(status_str, "GAME OVER ---- score2 :    %3d", pseudo_score2);
+			sprintf(status_str, "Plyer 1 Wins !!!");
+			status_time = 0;
+			iResumeTimer(10);
 		}
-		sprintf(score_str2, "score2 : %3d", 0);
-		score_ui2.text = score_str2;
+		// sprintf(score_str2, "score2 : %3d", 0);
+		// score_ui2.text = score_str2;
 		sprintf(life_str2, "Life :  %d", life2);
 		life_ui2.text = life_str2;
 		for (int i = 0; i < 8; i++)
@@ -622,9 +660,9 @@ void snake_two_update2()
 		if ((score2 % 4) == 0 && score2 != 0)
 		{
 			bonus_food_spawn1();
-			iResumeTimer(3);
+			iResumeTimer(8);
 			bonus_progress_bar1.w = 300;
-			iResumeTimer(4);
+			iResumeTimer(9);
 			bonus_time = 5;
 			bonus_text1.text = "BONUS!";
 		}
@@ -646,8 +684,8 @@ void snake_two_update2()
 			bonus_food_x = 100;
 			bonus_food_y = 100;
 			bonus_progress_bar1.w = 0;
-			iPauseTimer(3);
-			iPauseTimer(4);
+			iPauseTimer(8);
+			iPauseTimer(9);
 			sprintf(score_str2, "score2 : %3d", pseudo_score2);
 			score_ui2.text = score_str2;
 			bonus_text1.text = "";
@@ -678,20 +716,20 @@ void snake_two_update2()
 
 void two_player()
 {
-	iShowBMP(300, 300, "C:\\Users\\user\\Desktop\\BUET\\L-1 T-1\\CSE 102\\snake1-igraphics-project\\assets\\food.bmp");
-	iShowBMP(bonus_food_x * 30, bonus_food_y * 30, "jfdC:\\Users\\user\\Desktop\\BUET\\L-1 T-1\\CSE 102\\snake1-igraphics-project\\assets\\bonus-food.bmp");
 	snake_two_printer();
 	obstacle_printer();
-	if (status_time < 8)
-		render(&status_ui1);
+	
 	render(&exit_ui1);
 	render(&score_ui1);
 	render(&bonus_text1);
-	render(&bonus_progress_bar1);
 	render(&life_ui1);
 	render(&life_ui2);
 	render(&score_ui2);
-
+	render(&bonus_progress_bar1);
+	iShowBMP(bonus_food_x * 30, bonus_food_y * 30, "assets/bonus-food.bmp");
+	iShowBMP(food_x1 * 30, food_y1 * 30, "assets/food.bmp");
+	if (status_time < 8)
+		render(&status_ui1);
 }
 
 void two_player_control(int mx, int my)
@@ -729,7 +767,7 @@ void two_player_key_control(unsigned char key)
 		queue2 = true;
 		if (key == 'w')
 		{
-			if (direction_x2 != 0)
+			if ((direction_x2 != 0) || ((direction_x2 == 0) && (direction_y2 == 0)))
 			{
 				printf("snake2 goes up\n");
 				direction_y2 = 1;
@@ -738,7 +776,7 @@ void two_player_key_control(unsigned char key)
 		}
 		if (key == 's')
 		{
-			if (direction_x2 != 0)
+			if ((direction_x2 != 0))
 			{
 				printf("snake2 goes down\n");
 				direction_y2 = -1;
@@ -747,7 +785,7 @@ void two_player_key_control(unsigned char key)
 		}
 		if (key == 'd')
 		{
-			if (direction_y2 != 0)
+			if ((direction_y2 != 0) || ((direction_x2 == 0) && (direction_y2 == 0)))
 			{
 				printf("snake2 turns right\n");
 				direction_y2 = 0;
@@ -756,7 +794,7 @@ void two_player_key_control(unsigned char key)
 		}
 		if (key == 'a')
 		{
-			if (direction_y2 != 0)
+			if ((direction_y2 != 0) || ((direction_x2 == 0) && (direction_y2 == 0)))
 			{
 				printf("snake2 turns left\n");
 				direction_y2 = 0;
@@ -783,7 +821,7 @@ void two_player_special_control(unsigned char key)
 
 		if (key == GLUT_KEY_UP)
 		{
-			if (direction_x1 != 0)
+			if ((direction_x1 != 0) || ((direction_x1 == 0) && (direction_y1 == 0)))
 			{
 				printf("snake1 goes up\n");
 				direction_y1 = 1;
@@ -792,7 +830,7 @@ void two_player_special_control(unsigned char key)
 		}
 		if (key == GLUT_KEY_DOWN)
 		{
-			if (direction_x1 != 0)
+			if ((direction_x1 != 0))
 			{
 				printf("snake1 goes down\n");
 				direction_y1 = -1;
@@ -801,7 +839,7 @@ void two_player_special_control(unsigned char key)
 		}
 		if (key == GLUT_KEY_RIGHT)
 		{
-			if (direction_y1 != 0)
+			if ((direction_y1 != 0) || ((direction_x1 == 0) && (direction_y1 == 0)))
 			{
 				printf("snake1 turns right\n");
 				direction_y1 = 0;
@@ -810,7 +848,7 @@ void two_player_special_control(unsigned char key)
 		}
 		if (key == GLUT_KEY_LEFT)
 		{
-			if (direction_y1 != 0)
+			if ((direction_y1 != 0) || ((direction_x1 == 0) && (direction_y1 == 0)))
 			{
 				printf("snake1 turns left\n");
 				direction_y1 = 0;

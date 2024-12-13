@@ -1,6 +1,8 @@
 {
     "files.associations": {
+        "*.ejs": "html",
         "utility": "cpp",
-        "igraphics.h": "c"
+        "igraphics.h": "c",
+        "stb_image.h": "c"
     }
 }

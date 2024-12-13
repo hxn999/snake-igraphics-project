@@ -27,10 +27,10 @@
 int iScreenHeight, iScreenWidth;
 int iMouseX, iMouseY;
 int ifft = 0;
-void (*iAnimFunction[10])(void) = {0};
+void (*iAnimFunction[20])(void) = {0};
 int iAnimCount = 0;
-int iAnimDelays[10];
-int iAnimPause[10];
+int iAnimDelays[20];
+int iAnimPause[20];
 
 void iDraw();
 void iKeyboard(unsigned char);
@@ -89,12 +89,62 @@ static void __stdcall iA9(HWND, unsigned int, unsigned int, unsigned long)
     if (!iAnimPause[9])
         iAnimFunction[9]();
 }
+static void __stdcall iA10(HWND, unsigned int, unsigned int, unsigned long)
+{
+    if (!iAnimPause[10])
+        iAnimFunction[10]();
+}
+static void __stdcall iA11(HWND, unsigned int, unsigned int, unsigned long)
+{
+    if (!iAnimPause[11])
+        iAnimFunction[11]();
+}
+static void __stdcall iA12(HWND, unsigned int, unsigned int, unsigned long)
+{
+    if (!iAnimPause[12])
+        iAnimFunction[12]();
+}
+static void __stdcall iA13(HWND, unsigned int, unsigned int, unsigned long)
+{
+    if (!iAnimPause[13])
+        iAnimFunction[13]();
+}
+static void __stdcall iA14(HWND, unsigned int, unsigned int, unsigned long)
+{
+    if (!iAnimPause[14])
+        iAnimFunction[14]();
+}
+static void __stdcall iA15(HWND, unsigned int, unsigned int, unsigned long)
+{
+    if (!iAnimPause[15])
+        iAnimFunction[15]();
+}
+static void __stdcall iA16(HWND, unsigned int, unsigned int, unsigned long)
+{
+    if (!iAnimPause[16])
+        iAnimFunction[16]();
+}
+static void __stdcall iA17(HWND, unsigned int, unsigned int, unsigned long)
+{
+    if (!iAnimPause[17])
+        iAnimFunction[17]();
+}
+static void __stdcall iA18(HWND, unsigned int, unsigned int, unsigned long)
+{
+    if (!iAnimPause[18])
+        iAnimFunction[18]();
+}
+static void __stdcall iA19(HWND, unsigned int, unsigned int, unsigned long)
+{
+    if (!iAnimPause[19])
+        iAnimFunction[19]();
+}
 
 int iSetTimer(int msec, void (*f)(void))
 {
     int i = iAnimCount;
 
-    if (iAnimCount >= 10)
+    if (iAnimCount >= 20)
     {
         printf("Error: Maximum number of already timer used.\n");
         return -1;
@@ -125,6 +175,26 @@ int iSetTimer(int msec, void (*f)(void))
         SetTimer(0, 0, msec, iA8);
     if (iAnimCount == 9)
         SetTimer(0, 0, msec, iA9);
+    if (iAnimCount == 10)
+        SetTimer(0, 0, msec, iA10);
+    if (iAnimCount == 11)
+        SetTimer(0, 0, msec, iA11);
+    if (iAnimCount == 12)
+        SetTimer(0, 0, msec, iA12);
+    if (iAnimCount == 13)
+        SetTimer(0, 0, msec, iA13);
+    if (iAnimCount == 14)
+        SetTimer(0, 0, msec, iA14);
+    if (iAnimCount == 15)
+        SetTimer(0, 0, msec, iA15);
+    if (iAnimCount == 16)
+        SetTimer(0, 0, msec, iA16);
+    if (iAnimCount == 17)
+        SetTimer(0, 0, msec, iA17);
+    if (iAnimCount == 18)
+        SetTimer(0, 0, msec, iA18);
+    if (iAnimCount == 19)
+        SetTimer(0, 0, msec, iA19);
     iAnimCount++;
 
     return iAnimCount - 1;

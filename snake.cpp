@@ -13,7 +13,6 @@
 #define WINDOW_HEIGHT 625
 #define WINDOW_WIDTH 1000
 
-
 /*
 	function iDraw() is called again and again by the system.
 */
@@ -23,6 +22,7 @@ void iDraw()
 	iClear();
 
 	// Background Image
+
 	iShowBMP(0, 0, "assets/bg-dark.bmp");
 	if (page_state != 0)
 	{
@@ -90,7 +90,7 @@ void iMouse(int button, int state, int mx, int my)
 			iText(50, 60, "THIS IS COMPUTER PAGE", GLUT_BITMAP_HELVETICA_18);
 			break;
 		case 4:
-			settings_control(mx,my);
+			settings_control(mx, my);
 			break;
 		case 5:
 			iText(50, 60, "THIS IS HELP PAGE", GLUT_BITMAP_HELVETICA_18);
@@ -125,30 +125,29 @@ void iKeyboard(unsigned char key)
 	// }
 
 	switch (page_state)
-		{
-		case 0:
-			
-			break;
-		case 1:
-			single_player_key_control(key);
-			break;
-		case 2:
-			two_player_key_control(key);
-			break;
-		case 3:
-			iText(50, 60, "THIS IS COMPUTER PAGE", GLUT_BITMAP_HELVETICA_18);
-			break;
-		case 4:
-			iText(50, 60, "THIS IS SETTINGS PAGE", GLUT_BITMAP_HELVETICA_18);
-			break;
-		case 5:
-			iText(50, 60, "THIS IS HELP PAGE", GLUT_BITMAP_HELVETICA_18);
-			break;
+	{
+	case 0:
 
-		default:
-			break;
-		}
+		break;
+	case 1:
+		single_player_key_control(key);
+		break;
+	case 2:
+		two_player_key_control(key);
+		break;
+	case 3:
+		iText(50, 60, "THIS IS COMPUTER PAGE", GLUT_BITMAP_HELVETICA_18);
+		break;
+	case 4:
+		iText(50, 60, "THIS IS SETTINGS PAGE", GLUT_BITMAP_HELVETICA_18);
+		break;
+	case 5:
+		iText(50, 60, "THIS IS HELP PAGE", GLUT_BITMAP_HELVETICA_18);
+		break;
 
+	default:
+		break;
+	}
 
 	// place your codes for other keys here
 }
@@ -166,31 +165,30 @@ void iSpecialKeyboard(unsigned char key)
 {
 
 	switch (page_state)
-		{
-		case 0:
-			
-			break;
-		case 1:
-			single_player_special_control(key);
-			break;
-		case 2:
-			two_player_special_control(key);
-			break;
-		case 3:
-			iText(50, 60, "THIS IS COMPUTER PAGE", GLUT_BITMAP_HELVETICA_18);
-			break;
-		case 4:
-			iText(50, 60, "THIS IS SETTINGS PAGE", GLUT_BITMAP_HELVETICA_18);
-			break;
-		case 5:
-			iText(50, 60, "THIS IS HELP PAGE", GLUT_BITMAP_HELVETICA_18);
-			break;
+	{
+	case 0:
 
-		default:
-			break;
-		}
+		break;
+	case 1:
+		single_player_special_control(key);
+		break;
+	case 2:
+		two_player_special_control(key);
+		break;
+	case 3:
+		iText(50, 60, "THIS IS COMPUTER PAGE", GLUT_BITMAP_HELVETICA_18);
+		break;
+	case 4:
+		iText(50, 60, "THIS IS SETTINGS PAGE", GLUT_BITMAP_HELVETICA_18);
+		break;
+	case 5:
+		iText(50, 60, "THIS IS HELP PAGE", GLUT_BITMAP_HELVETICA_18);
+		break;
 
-	
+	default:
+		break;
+	}
+
 	// place your codes for other keys here
 }
 
@@ -200,13 +198,13 @@ int main()
 	// place your own initialization codes here.
 	iSetTimer(100, snake_update);
 	iPauseTimer(0);
-	iSetTimer(100,food_spawn);
+	iSetTimer(100, food_spawn);
 	iPauseTimer(1);
-	iSetTimer(500,status_modal);
+	iSetTimer(500, status_modal);
 	iPauseTimer(2);
-	iSetTimer(1000,bonus_food_timer);
+	iSetTimer(1000, bonus_food_timer);
 	iPauseTimer(3);
-	iSetTimer(17,bonus_progress_controller);
+	iSetTimer(17, bonus_progress_controller);
 	iPauseTimer(4);
 	iSetTimer(100, snake_two_update1);
 	iPauseTimer(5);
@@ -214,7 +212,12 @@ int main()
 	iPauseTimer(6);
 	iSetTimer(100, food_spawn1);
 	iPauseTimer(7);
-
+	iSetTimer(1000, bonus_food_timer1);
+	iPauseTimer(8);
+	iSetTimer(17, bonus_progress_controller1);
+	iPauseTimer(9);
+	iSetTimer(500, status_modal1);
+	iPauseTimer(10);
 	iInitialize(WINDOW_WIDTH, WINDOW_HEIGHT, "Snake_shhhhhh");
 	return 0;
 }
