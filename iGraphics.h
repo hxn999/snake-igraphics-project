@@ -37,6 +37,7 @@ void iKeyboard(unsigned char);
 void iSpecialKeyboard(unsigned char);
 void NewFunction();
 void iMouseMove(int, int);
+void iPassiveMouseMove(int, int);
 void iMouse(int button, int state, int x, int y);
 
 static void __stdcall iA0(HWND, unsigned int, unsigned int, unsigned long)
@@ -345,9 +346,9 @@ void iShowBMP2(int x, int y, char filename[], int ignoreColor)
     stbi_image_free(image);
 }
 
-void iShowBMP(int x, int y, char filename[])
+void iShowBMP(int x, int y, char filename[],int ignr=0)
 {
-    iShowBMP2(x, y, filename, -1 /* ignoreColor */);
+    iShowBMP2(x, y, filename,ignr );
 }
 
 void iGetPixelColor(int cursorX, int cursorY, int rgb[])
@@ -640,6 +641,14 @@ void mouseMoveHandlerFF(int mx, int my)
 
     glFlush();
 }
+void mousePassiveMoveHandlerFF(int x, int y)
+{
+    iMouseX = x;
+    iMouseY = iScreenHeight - y;
+    iPassiveMouseMove(iMouseX, iMouseY);
+
+    glFlush();
+}
 
 void mouseHandlerFF(int button, int state, int x, int y)
 {
@@ -673,6 +682,7 @@ void iInitialize(int width = 500, int height = 500, char *title = "iGraphics")
     glutKeyboardFunc(keyboardHandler1FF); // normal
     glutSpecialFunc(keyboardHandler2FF);  // special keys
     glutMouseFunc(mouseHandlerFF);
+    glutPassiveMotionFunc(mousePassiveMoveHandlerFF);
     glutMotionFunc(mouseMoveHandlerFF);
     glutIdleFunc(animFF);
 

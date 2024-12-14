@@ -394,7 +394,7 @@ void snake_update()
 
 	if (collide(head_x, head_y) || (head_x < 0 || head_x > 32) || (head_y < 0 || head_y > 18))
 	{
-		iPauseTimer(0);
+		iPauseTimer(single_snake_timer);
 		iPauseTimer(1);
 		iResumeTimer(2);
 		status_time = 0;
@@ -404,9 +404,9 @@ void snake_update()
 		// game ends here
 		if (life == 0)
 		{
+			PlaySound("assets/game-over.wav",NULL,SND_ASYNC);
 			// Open the file in read mode
 			file = fopen(filename, "r");
-		
 
 			// Find the file size
 			fseek(file, 0, SEEK_END);
@@ -415,7 +415,6 @@ void snake_update()
 
 			// Allocate memory for the file content
 			content = (char *)malloc(fileSize + 1);
-			
 
 			// Read the file into the buffer
 			fread(content, 1, fileSize, file);
@@ -430,16 +429,16 @@ void snake_update()
 				fclose(file);
 
 				file = fopen(filename, "w");
-				
 
-				sprintf(new_highest_score,"%d",pseudo_score);
+				sprintf(new_highest_score, "%d", pseudo_score);
 				// Write the new content to the file
 				fprintf(file, "%s", new_highest_score);
 
 				// Close the file
 				fclose(file);
 			}
-			else{
+			else
+			{
 				sprintf(status_str, "SCORE :  %3d | HIGHEST SCORE :  %3ld", pseudo_score, highest_score);
 				free(content);
 				fclose(file);
@@ -463,7 +462,8 @@ void snake_update()
 	if ((head_x == food_x) && (head_y == food_y))
 	{
 		printf("snake bites !\n");
-		// PlaySound("assets/bite.wav", NULL, SND_ASYNC);
+
+		PlaySound(bite_buffer, NULL,SND_MEMORY | SND_ASYNC);
 		score++;
 		pseudo_score++;
 		printf("score %3d\n", pseudo_score);
@@ -497,6 +497,7 @@ void snake_update()
 		bonus_eaten = ((head_x == bonus_food_x) && (head_y == bonus_food_y)) || ((head_x == (bonus_food_x + 1)) && (head_y == bonus_food_y)) || ((head_x == bonus_food_x) && (head_y == (bonus_food_y + 1))) || ((head_x == (bonus_food_x + 1)) && (head_y == (bonus_food_y + 1)));
 		if (bonus_eaten)
 		{
+			PlaySound(bite_buffer, NULL,SND_MEMORY | SND_ASYNC);
 			pseudo_score = pseudo_score + 3 * bonus_time;
 			bonus_food_x = 100;
 			bonus_food_y = 100;
@@ -533,7 +534,7 @@ void snake_update()
 
 void single_player()
 {
-	iText(20, 30, "hi", GLUT_BITMAP_HELVETICA_18);
+	
 	render(&life_ui);
 	render(&exit_ui);
 	render(&score_ui);
@@ -554,6 +555,7 @@ void single_player_control(int mx, int my)
 
 		page_state = 0;
 		score = 0;
+		pseudo_score = 0;
 		life = 3;
 		level = 1;
 		strcpy(status_str, "RESPAWNING IN FEW MOMENTS");
@@ -566,6 +568,7 @@ void single_player_control(int mx, int my)
 		}
 
 		snake_len = 8;
+		iPauseTimer(single_snake_timer);
 	}
 }
 
@@ -578,7 +581,7 @@ void single_player_special_control(unsigned char key)
 	if (status_time < 8)
 		return;
 	if (iAnimPause[0] == 1)
-		iResumeTimer(0);
+		iResumeTimer(single_snake_timer);
 
 	if (key == GLUT_KEY_END)
 	{

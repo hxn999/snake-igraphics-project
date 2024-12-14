@@ -4,6 +4,7 @@
 #include "pages/single_player.cpp"
 #include "pages/two_player.cpp"
 #include "pages/settings.cpp"
+#include "pages/help.cpp"
 #include <string.h>
 #include <time.h>
 #include <stdbool.h>
@@ -12,6 +13,11 @@
 // CONSTANTS
 #define WINDOW_HEIGHT 625
 #define WINDOW_WIDTH 1000
+
+
+
+
+char* loadFileToMemory(const char* filePath, int* fileSize);
 
 /*
 	function iDraw() is called again and again by the system.
@@ -34,12 +40,24 @@ void iDraw()
 	switch (page_state)
 	{
 	case 0:
+		if (iAnimPause[14] == 1)
+		{
+			iResumeTimer(14);
+		}
 		home_page();
 		break;
 	case 1:
+		if (iAnimPause[14] !=1)
+		{
+			iPauseTimer(14);
+		}
 		single_player();
 		break;
 	case 2:
+	if (iAnimPause[14] !=1)
+		{
+			iPauseTimer(14);
+		}
 		two_player();
 		break;
 	case 3:
@@ -49,7 +67,7 @@ void iDraw()
 		settings_page();
 		break;
 	case 5:
-		iText(50, 60, "THIS IS HELP PAGE", GLUT_BITMAP_HELVETICA_18);
+		help_page();
 		break;
 
 	default:
@@ -65,6 +83,56 @@ void iDraw()
 void iMouseMove(int mx, int my)
 {
 	// place your codes here
+	
+}
+
+void iPassiveMouseMove(int mx, int my)
+{
+	if(click_or_hover(mx,my,single_btn,0))
+	{
+		single_btn.color={26, 26, 125};
+	}
+	else{
+		single_btn.color={82, 3, 252};
+	}
+	if(click_or_hover(mx,my,two_player_btn,0))
+	{
+		two_player_btn.color={26, 26, 125};
+	}
+	else{
+		two_player_btn.color={82, 3, 252};
+	}
+	if(click_or_hover(mx,my,settings,0))
+	{
+		settings.color={26, 26, 125};
+	}
+	else{
+		settings.color={82, 3, 252};
+	}
+	if(click_or_hover(mx,my,help,0))
+	{
+		help.color={26, 26, 125};
+	}else{
+		help.color={82, 3, 252};
+	}
+	if(click_or_hover(mx,my,exit_ui,0))
+	{
+		exit_ui.color={26, 26, 125};
+	}else{
+		exit_ui.color={82, 3, 252};
+	}
+	if(click_or_hover(mx,my,exit_ui1,0))
+	{
+		exit_ui1.color={26, 26, 125};
+	}else{
+		exit_ui1.color={82, 3, 252};
+	}
+	if(click_or_hover(mx,my,back_ui,0))
+	{
+		back_ui.color={26, 26, 125};
+	}else{
+		back_ui.color={82, 3, 252};
+	}
 }
 
 /*
@@ -93,7 +161,7 @@ void iMouse(int button, int state, int mx, int my)
 			settings_control(mx, my);
 			break;
 		case 5:
-			iText(50, 60, "THIS IS HELP PAGE", GLUT_BITMAP_HELVETICA_18);
+			help_page_control(mx, my);
 			break;
 
 		default:
@@ -194,30 +262,92 @@ void iSpecialKeyboard(unsigned char key)
 
 int main()
 {
+
 	srand(time(0));
 	// place your own initialization codes here.
+	bg_buffer=loadFileToMemory(bg_file_path, &fileSize_bg);
+	bite_buffer=loadFileToMemory(bite_file_path,&fileSize_bite);
+	click_buffer=loadFileToMemory(click_file_path,&fileSize_click);
+
+
 	iSetTimer(100, snake_update);
 	iPauseTimer(0);
+
 	iSetTimer(100, food_spawn);
 	iPauseTimer(1);
+
 	iSetTimer(500, status_modal);
 	iPauseTimer(2);
+
 	iSetTimer(1000, bonus_food_timer);
 	iPauseTimer(3);
+
 	iSetTimer(17, bonus_progress_controller);
 	iPauseTimer(4);
+
 	iSetTimer(100, snake_two_update1);
 	iPauseTimer(5);
+
 	iSetTimer(100, snake_two_update2);
 	iPauseTimer(6);
+
 	iSetTimer(100, food_spawn1);
 	iPauseTimer(7);
+
 	iSetTimer(1000, bonus_food_timer1);
 	iPauseTimer(8);
+
 	iSetTimer(17, bonus_progress_controller1);
 	iPauseTimer(9);
+
 	iSetTimer(500, status_modal1);
 	iPauseTimer(10);
+
+	// single snake difficulty modes
+	//  easy
+	iSetTimer(150, snake_update);
+	iPauseTimer(11);
+	// hard
+	iSetTimer(50, snake_update);
+	iPauseTimer(12);
+
+	iSetTimer(20, title_animation); // 13
+	iSetTimer(2000, bg_music);		// 14
+
 	iInitialize(WINDOW_WIDTH, WINDOW_HEIGHT, "Snake_shhhhhh");
 	return 0;
+}
+
+
+
+// loads file to memory
+char* loadFileToMemory(const char* filePath, int* fileSize) {
+    FILE* file = fopen(filePath, "rb");
+    if (!file) {
+        printf("Error: Could not open file!\n");
+        return NULL;
+    }
+
+    // Get file size
+    fseek(file, 0, SEEK_END);
+    *fileSize = ftell(file);
+    fseek(file, 0, SEEK_SET);
+
+    // Allocate memory and read file content
+    char* buffer = (char*)malloc(*fileSize);
+    if (!buffer) {
+        printf("Error: Memory allocation failed!\n");
+        fclose(file);
+        return NULL;
+    }
+
+    if (fread(buffer, 1, *fileSize, file) != *fileSize) {
+        printf("Error: Could not read file!\n");
+        free(buffer);
+        fclose(file);
+        return NULL;
+    }
+
+    fclose(file);
+    return buffer;
 }

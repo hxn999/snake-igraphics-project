@@ -23,7 +23,7 @@ Ui easy = {
     50,
     100,
     "EASY",
-    {49, 141, 181},
+    { 82 ,  3,  252},
      18,
     "",
      true,
@@ -34,7 +34,7 @@ Ui medium = {
     50,
     100,
     "MEDIUM",
-    { 82 ,  3,  252},
+  {49, 141, 181},
      18,
     "",
      true,
@@ -104,21 +104,21 @@ void settings_control(int mx , int my)
 {
     if(click_or_hover(mx,my,easy))
     {
-        difficulty=3;
+        single_snake_timer=11;
         easy.color = {49, 141, 181};
          medium.color = {82, 3, 252};
          hard.color = {82, 3, 252};
     }
     if(click_or_hover(mx,my,medium))
     {
-        difficulty=2;
+        single_snake_timer=0;
          medium.color = {49, 141, 181};
          easy.color = {82, 3, 252};
          hard.color = {82, 3, 252};
     }
     if(click_or_hover(mx,my,hard))
     {
-        difficulty=1;
+        single_snake_timer=12;
          hard.color = {49, 141, 181};
          medium.color = {82, 3, 252};
          easy.color = {82, 3, 252};

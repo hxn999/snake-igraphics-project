@@ -10,6 +10,7 @@
 #include "../iGraphics.h"
 #include "single_player.cpp"
 
+int check = 0;
 /*
 snake1 directions
 x,y=0 means static snake1
@@ -241,18 +242,19 @@ void status_modal1()
 {
 	if (status_time < 8)
 	{
-		printf("hiiiiiiii\n");
+		
 		status_time++;
 	}
 	else
 	{
-		printf("hiiiiiiii-------\n");
+		
 		status_time = 10;
 		iPauseTimer(10);
 
 		// resetting all game states and redirecting to homepage
 		page_state = 0;
 		score1 = 0;
+		pseudo_score1 = 0;
 		life1 = 3;
 		level = 1;
 		sprintf(life_str1, "Life : 3");
@@ -261,6 +263,7 @@ void status_modal1()
 		score_ui1.text = score_str1;
 
 		score2 = 0;
+		pseudo_score2 = 0;
 		life2 = 3;
 		// level = 1;
 		sprintf(life_str2, "Life : 3");
@@ -481,7 +484,15 @@ void snake_two_printer()
 		iFilledRectangle(snake2[i].x * 30, snake2[i].y * 30, 30, 30);
 		iSetColor(82, 3, 0);
 		iRectangle(snake2[i].x * 30, snake2[i].y * 30, 30, 30);
+		if(i==4)
+		{
+			iSetColor(161, 117, 255);
+		iFilledRectangle(snake2[i].x * 30, snake2[i].y * 30, 30, 30);
+		iSetColor(82, 3, 0);
+		iRectangle(snake2[i].x * 30, snake2[i].y * 30, 30, 30);
+		}
 	}
+	
 }
 
 // UPDATES snake1 POSITION
@@ -489,6 +500,7 @@ void snake_two_update1()
 {
 	if (pseudo_score1 >= 30)
 	{
+		PlaySound("assets/game-over.wav", NULL, SND_ASYNC);
 		iPauseTimer(5);
 		sprintf(status_str, "Plyer 2 Wins !!!");
 		status_time = 0;
@@ -510,6 +522,7 @@ void snake_two_update1()
 		printf("snake1 crashed !!\n");
 		if (life1 == 0)
 		{
+			PlaySound("assets/game-over.wav", NULL, SND_ASYNC);
 			sprintf(status_str, "Plyer 2 Wins !!!");
 			status_time = 0;
 			iResumeTimer(10);
@@ -531,7 +544,8 @@ void snake_two_update1()
 	if ((head_x1 == food_x1) && (head_y1 == food_y1))
 	{
 		printf("snake1 bites !\n");
-		// PlaySound("assets/bite.wav", NULL, SND_ASYNC);
+
+		PlaySound(bite_buffer, NULL, SND_MEMORY | SND_ASYNC);
 		score1++;
 		pseudo_score1++;
 		printf("score1 %3d\n", pseudo_score1);
@@ -565,6 +579,7 @@ void snake_two_update1()
 		bonus_eaten = ((head_x1 == bonus_food_x) && (head_y1 == bonus_food_y)) || ((head_x1 == (bonus_food_x + 1)) && (head_y1 == bonus_food_y)) || ((head_x1 == bonus_food_x) && (head_y1 == (bonus_food_y + 1))) || ((head_x1 == (bonus_food_x + 1)) && (head_y1 == (bonus_food_y + 1)));
 		if (bonus_eaten)
 		{
+			PlaySound(bite_buffer, NULL, SND_MEMORY | SND_ASYNC);
 			pseudo_score1 = pseudo_score1 + 3 * bonus_time;
 			bonus_food_x = 100;
 			bonus_food_y = 100;
@@ -603,6 +618,7 @@ void snake_two_update2()
 {
 	if (pseudo_score2 >= 30)
 	{
+		PlaySound("assets/game-over.wav", NULL, SND_ASYNC);
 		iPauseTimer(6);
 		sprintf(status_str, "Plyer 1 Wins !!!");
 		status_time = 0;
@@ -626,6 +642,7 @@ void snake_two_update2()
 		printf("snake2 crashed !!\n");
 		if (life2 == 0)
 		{
+			PlaySound("assets/game-over.wav", NULL, SND_ASYNC);
 			sprintf(status_str, "Plyer 1 Wins !!!");
 			status_time = 0;
 			iResumeTimer(10);
@@ -647,6 +664,7 @@ void snake_two_update2()
 	{
 		printf("snake2 bites !\n");
 		// PlaySound("assets/bite.wav", NULL, SND_ASYNC);
+		PlaySound(bite_buffer, NULL, SND_MEMORY | SND_ASYNC);
 		score2++;
 		pseudo_score2++;
 		printf("score2 %3d\n", pseudo_score2);
@@ -680,6 +698,7 @@ void snake_two_update2()
 		bonus_eaten = ((head_x2 == bonus_food_x) && (head_y2 == bonus_food_y)) || ((head_x2 == (bonus_food_x + 2)) && (head_y2 == bonus_food_y)) || ((head_x2 == bonus_food_x) && (head_y2 == (bonus_food_y + 2))) || ((head_x2 == (bonus_food_x + 2)) && (head_y2 == (bonus_food_y + 2)));
 		if (bonus_eaten)
 		{
+			PlaySound(bite_buffer, NULL, SND_MEMORY | SND_ASYNC);
 			pseudo_score2 = pseudo_score2 + 3 * bonus_time;
 			bonus_food_x = 100;
 			bonus_food_y = 100;
@@ -718,7 +737,7 @@ void two_player()
 {
 	snake_two_printer();
 	obstacle_printer();
-	
+
 	render(&exit_ui1);
 	render(&score_ui1);
 	render(&bonus_text1);
